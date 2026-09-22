@@ -1,0 +1,6 @@
+{
+  "name": "Gerador de Memes",
+  "description": "Gerador de memes inteligente com Legenda Mágica por IA, modelos populares em alta, análise de imagens e criação de memes em português brasileiro.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
