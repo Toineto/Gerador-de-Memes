@@ -50,7 +50,7 @@ export const MemeCanvas: React.FC<MemeCanvasProps> = ({
     height: 600,
   });
 
-  // Load image whenever URL changes
+  // Carrega a imagem sempre que a URL for alterada
   useEffect(() => {
     setImageLoaded(false);
     const img = new Image();
@@ -62,8 +62,8 @@ export const MemeCanvas: React.FC<MemeCanvasProps> = ({
       setImageLoaded(true);
     };
     img.onerror = () => {
-      console.error('Failed to load image:', imageUrl);
-      // Fallback: create placeholder
+      console.error('Falha ao carregar a imagem:', imageUrl);
+      // Imagem reserva caso a URL principal falhe
       const fallbackImg = new Image();
       fallbackImg.src = 'https://api.memegen.link/images/drake.jpg';
       fallbackImg.crossOrigin = 'anonymous';
@@ -76,7 +76,7 @@ export const MemeCanvas: React.FC<MemeCanvasProps> = ({
   }, [imageUrl]);
 
   /**
-   * Main Canvas render routine
+   * Rotina principal de renderização do Canvas do Meme
    */
   const renderCanvas = useCallback(() => {
     const canvas = canvasRef.current;
@@ -88,15 +88,15 @@ export const MemeCanvas: React.FC<MemeCanvasProps> = ({
     const origW = naturalDimensions.width;
     const origH = naturalDimensions.height;
 
-    // Fixed export base width for consistent crisp typography
+    // Largura base de exportação para manter a tipografia nítida e com alta resolução
     const targetW = 800;
     const scale = targetW / origW;
     const targetH = Math.round(origH * scale);
 
-    // Banner calculations
+    // Cálculo da altura do banner superior
     let bannerH = 0;
     if (memeStyle === 'modern_banner' && topText.trim()) {
-      // White top banner height estimation
+      // Estima a altura do banner branco superior
       bannerH = Math.max(120, Math.round(fontSize * 2.6));
     }
 
@@ -106,20 +106,20 @@ export const MemeCanvas: React.FC<MemeCanvasProps> = ({
     canvas.width = totalCanvasW;
     canvas.height = totalCanvasH;
 
-    // Clear canvas
+    // Limpa o canvas antes de desenhar
     ctx.clearRect(0, 0, totalCanvasW, totalCanvasH);
 
-    // Draw Modern Banner background if enabled
+    // Desenha o fundo branco do Banner Moderno se ativado
     if (bannerH > 0) {
       ctx.fillStyle = '#FFFFFF';
       ctx.fillRect(0, 0, totalCanvasW, bannerH);
 
-      // Subtle bottom divider line
+      // Linha divisória sutil na parte inferior do banner
       ctx.fillStyle = '#E2E8F0';
       ctx.fillRect(0, bannerH - 2, totalCanvasW, 2);
     }
 
-    // Apply canvas filters
+    // Aplica os filtros visuais no canvas
     ctx.save();
     if (filter === 'contrast') {
       ctx.filter = 'contrast(150%) brightness(105%)';
@@ -133,11 +133,11 @@ export const MemeCanvas: React.FC<MemeCanvasProps> = ({
       ctx.filter = 'none';
     }
 
-    // Draw base image below banner
+    // Desenha a imagem base logo abaixo do banner
     ctx.drawImage(imageObj, 0, bannerH, targetW, targetH);
     ctx.restore();
 
-    // Helper to wrap and draw text
+    // Função auxiliar para quebrar linhas e desenhar o texto com contorno
     const drawMemeText = (
       text: string,
       x: number,
@@ -160,7 +160,7 @@ export const MemeCanvas: React.FC<MemeCanvasProps> = ({
       ctx.textAlign = align;
       ctx.textBaseline = isBanner ? 'middle' : 'middle';
 
-      // Word wrapping
+      // Quebra automática de linha por palavras
       const words = formatted.split(' ');
       const lines: string[] = [];
       let currentLine = words[0] || '';
@@ -184,11 +184,11 @@ export const MemeCanvas: React.FC<MemeCanvasProps> = ({
         const lineY = startY + index * lineHeight;
 
         if (isBanner) {
-          // Modern banner: Clean dark typography with no heavy stroke
+          // Banner moderno: tipografia escura limpa sem contorno grosso
           ctx.fillStyle = '#0F172A';
           ctx.fillText(line, x, lineY);
         } else {
-          // Classic Meme style: heavy outline + fill + shadow
+          // Estilo clássico de meme: contorno forte + preenchimento + sombra
           if (hasShadow) {
             ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
             ctx.shadowBlur = 8;
@@ -220,7 +220,7 @@ export const MemeCanvas: React.FC<MemeCanvasProps> = ({
     const effectiveFontSize = Math.round(fontSize * (totalCanvasW / 600));
     const effectiveStrokeWidth = Math.round(strokeWidth * (totalCanvasW / 600));
 
-    // 1. Top Text
+    // 1. Texto Superior
     if (topText.trim()) {
       if (memeStyle === 'modern_banner') {
         const bannerX =
@@ -247,7 +247,7 @@ export const MemeCanvas: React.FC<MemeCanvasProps> = ({
           true,
         );
       } else {
-        // Classic overlay at top
+        // Sobreposição clássica no topo da imagem
         const topX =
           textAlign === 'center'
             ? totalCanvasW / 2
@@ -272,7 +272,7 @@ export const MemeCanvas: React.FC<MemeCanvasProps> = ({
       }
     }
 
-    // 2. Bottom Text
+    // 2. Texto Inferior
     if (bottomText.trim()) {
       const botX =
         textAlign === 'center'
@@ -297,7 +297,7 @@ export const MemeCanvas: React.FC<MemeCanvasProps> = ({
       );
     }
 
-    // 3. Extra text layers
+    // 3. Camadas adicionais de texto
     extraLayers.forEach((layer) => {
       if (!layer.text.trim()) return;
       const layerX = layer.x * totalCanvasW;
@@ -320,7 +320,7 @@ export const MemeCanvas: React.FC<MemeCanvasProps> = ({
       );
     });
 
-    // 4. Optional Watermark / Stamp
+    // 4. Marca d'água opcional
     if (watermark.trim()) {
       ctx.save();
       ctx.font = '600 14px Inter, sans-serif';
@@ -365,11 +365,11 @@ export const MemeCanvas: React.FC<MemeCanvasProps> = ({
       {!imageLoaded && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/80 z-10 gap-3">
           <RefreshCw className="w-8 h-8 text-indigo-400 animate-spin" />
-          <p className="text-sm font-medium text-slate-300">Loading meme canvas...</p>
+          <p className="text-sm font-medium text-slate-300">Carregando canvas do meme...</p>
         </div>
       )}
 
-      {/* The Actual HTML5 Canvas */}
+      {/* Canvas HTML5 Real */}
       <canvas
         ref={canvasRef}
         id="meme-canvas"

@@ -4,10 +4,12 @@ import { createServer as createViteServer } from 'vite';
 import { GoogleGenAI, Type } from '@google/genai';
 import dotenv from 'dotenv';
 
+// Carrega as variáveis de ambiente do arquivo .env
 dotenv.config();
 
 const PORT = 3000;
 
+// Inicialização segura do cliente do Google Gemini
 function getGeminiClient(): GoogleGenAI {
   return new GoogleGenAI({
     apiKey: process.env.GEMINI_API_KEY || '',
@@ -22,37 +24,37 @@ function getGeminiClient(): GoogleGenAI {
 async function startServer() {
   const app = express();
 
-  // Allow high-res base64 image uploads
+  // Suporte a envio de imagens em alta resolução em base64 (limite de 30MB)
   app.use(express.json({ limit: '30mb' }));
   app.use(express.urlencoded({ extended: true, limit: '30mb' }));
 
-  // Health check endpoint
+  // Rota de verificação de integridade do servidor
   app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', time: new Date().toISOString() });
   });
 
   /**
-   * Helper to normalize base64 data and mime type
+   * Função auxiliar para normalizar os dados em base64 e o tipo MIME da imagem
    */
   function parseBase64Image(dataUri: string): { mimeType: string; base64Data: string } {
     const match = dataUri.match(/^data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+);base64,(.+)$/);
     if (match) {
       return { mimeType: match[1], base64Data: match[2] };
     }
-    // Fallback default
+    // Formato padrão caso venha sem prefixo data URI
     return { mimeType: 'image/jpeg', base64Data: dataUri };
   }
 
   /**
    * POST /api/magic-captions
-   * Analyzes the image context and generates 5 funny, punchy meme captions
+   * Analisa a imagem e gera 5 legendas hilárias com o melhor do humor brasileiro
    */
   app.post('/api/magic-captions', async (req, res) => {
     try {
       const { imageBase64, style = 'balanced', customContext = '' } = req.body;
 
       if (!imageBase64) {
-        return res.status(400).json({ error: 'Image data is required' });
+        return res.status(400).json({ error: 'Os dados da imagem são obrigatórios.' });
       }
 
       const { mimeType, base64Data } = parseBase64Image(imageBase64);
@@ -108,25 +110,25 @@ Retorne exatamente 5 opções em formato JSON estruturado.
               responseMimeType: 'application/json',
               responseSchema: {
                 type: Type.ARRAY,
-                description: 'Array of 5 funny meme caption options',
+                description: 'Array de 5 opções de legendas engraçadas de meme',
                 items: {
                   type: Type.OBJECT,
                   properties: {
                     topText: {
                       type: Type.STRING,
-                      description: 'Top text setup of the meme',
+                      description: 'Texto superior de introdução do meme',
                     },
                     bottomText: {
                       type: Type.STRING,
-                      description: 'Bottom text punchline of the meme',
+                      description: 'Texto inferior com o desfecho cômico do meme',
                     },
                     tag: {
                       type: Type.STRING,
-                      description: 'Short 1-2 word tag for humor category',
+                      description: 'Etiqueta curta de 1 a 2 palavras com a categoria do humor',
                     },
                     explanation: {
                       type: Type.STRING,
-                      description: 'Brief witty breakdown of why this matches the image context',
+                      description: 'Breve explicação de por que a piada combina com a expressão da imagem',
                     },
                   },
                   required: ['topText', 'bottomText', 'tag', 'explanation'],
@@ -140,42 +142,42 @@ Retorne exatamente 5 opções em formato JSON estruturado.
             break;
           }
         } catch (err) {
-          console.warn(`Model ${model} failed for magic captions, trying next:`, err);
+          console.warn(`Modelo ${model} falhou na legenda mágica, tentando o próximo:`, err);
         }
       }
 
       if (!responseText) {
-        throw new Error('Failed to generate captions from Gemini models.');
+        throw new Error('Falha ao gerar legendas com os modelos Gemini.');
       }
 
       const captions = JSON.parse(responseText).map((cap: any, index: number) => ({
         id: `cap-${Date.now()}-${index}`,
         topText: cap.topText || '',
         bottomText: cap.bottomText || '',
-        tag: cap.tag || 'Relatable',
-        explanation: cap.explanation || 'Matches the expression perfectly.',
+        tag: cap.tag || 'Cotidiano',
+        explanation: cap.explanation || 'Combina perfeitamente com a expressão da foto.',
       }));
 
       res.json({ captions });
     } catch (error: any) {
-      console.error('Error in /api/magic-captions:', error);
+      console.error('Erro em /api/magic-captions:', error);
       res.status(500).json({
-        error: error.message || 'Internal error while generating magic captions',
+        error: error.message || 'Erro interno ao gerar as legendas mágicas',
       });
     }
   });
 
   /**
    * POST /api/analyze-image
-   * Deep image understanding with gemini-3.1-pro-preview to evaluate meme potential,
-   * scene breakdown, humor angles, and cultural context.
+   * Análise profunda da imagem usando Gemini para avaliar potencial viral,
+   * dinâmica cômica da cena, expressões faciais e contextos culturais brasileiros.
    */
   app.post('/api/analyze-image', async (req, res) => {
     try {
       const { imageBase64 } = req.body;
 
       if (!imageBase64) {
-        return res.status(400).json({ error: 'Image data is required' });
+        return res.status(400).json({ error: 'Os dados da imagem são obrigatórios.' });
       }
 
       const { mimeType, base64Data } = parseBase64Image(imageBase64);
@@ -245,35 +247,34 @@ Forneça uma análise perspicaz, divertida e completa EM PORTUGUÊS DO BRASIL (p
             break;
           }
         } catch (err) {
-          console.warn(`Model ${model} failed for image analysis, trying next:`, err);
+          console.warn(`Modelo ${model} falhou na análise da imagem, tentando o próximo:`, err);
         }
       }
 
       if (!responseText) {
-        throw new Error('Failed to analyze image with Gemini models.');
+        throw new Error('Falha ao analisar a imagem com os modelos Gemini.');
       }
 
       const analysis = JSON.parse(responseText);
       res.json({ analysis });
     } catch (error: any) {
-      console.error('Error in /api/analyze-image:', error);
+      console.error('Erro em /api/analyze-image:', error);
       res.status(500).json({
-        error: error.message || 'Internal error while analyzing image',
+        error: error.message || 'Erro interno ao analisar a imagem',
       });
     }
   });
 
   /**
    * POST /api/generate-image
-   * Uses Gemini Image generation (gemini-3.1-flash-image / gemini-3.1-flash-lite-image)
-   * to create brand new meme backgrounds from text prompts!
+   * Utiliza a geração de imagens do Gemini para criar novas imagens de memes a partir de prompts em texto
    */
   app.post('/api/generate-image', async (req, res) => {
     try {
       const { prompt, aspectRatio = '1:1' } = req.body;
 
       if (!prompt || typeof prompt !== 'string') {
-        return res.status(400).json({ error: 'Prompt is required' });
+        return res.status(400).json({ error: 'O texto descritivo (prompt) é obrigatório.' });
       }
 
       const ai = getGeminiClient();
@@ -315,26 +316,26 @@ Forneça uma análise perspicaz, divertida e completa EM PORTUGUÊS DO BRASIL (p
             break;
           }
         } catch (err) {
-          console.warn(`Image generation model ${model} failed:`, err);
+          console.warn(`Modelo de geração de imagem ${model} falhou:`, err);
         }
       }
 
       if (!generatedImageUrl) {
         return res.status(500).json({
-          error: 'Could not generate image. Please try a different prompt or try again.',
+          error: 'Não foi possível gerar a imagem. Tente um texto descritivo diferente ou tente novamente.',
         });
       }
 
       res.json({ imageUrl: generatedImageUrl });
     } catch (error: any) {
-      console.error('Error in /api/generate-image:', error);
+      console.error('Erro em /api/generate-image:', error);
       res.status(500).json({
-        error: error.message || 'Failed to generate meme image',
+        error: error.message || 'Falha ao gerar imagem de meme',
       });
     }
   });
 
-  // Vite development middleware or static production serving
+  // Middleware do Vite em ambiente de desenvolvimento ou arquivos estáticos em produção
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({
       server: { middlewareMode: true },
@@ -350,7 +351,7 @@ Forneça uma análise perspicaz, divertida e completa EM PORTUGUÊS DO BRASIL (p
   }
 
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Meme Generator server running on http://0.0.0.0:${PORT}`);
+    console.log(`Servidor do Gerador de Memes rodando em http://0.0.0.0:${PORT}`);
   });
 }
 

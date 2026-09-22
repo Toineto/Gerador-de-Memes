@@ -84,7 +84,7 @@ export const MagicCaptionModal: React.FC<MagicCaptionModalProps> = ({
     }
   };
 
-  // Auto trigger generation on first open if empty
+  // Dispara a geração automaticamente na primeira vez que abre o modal
   React.useEffect(() => {
     if (isOpen && captions.length === 0 && !isLoading) {
       handleGenerateCaptions();
@@ -103,7 +103,7 @@ export const MagicCaptionModal: React.FC<MagicCaptionModalProps> = ({
           transition={{ duration: 0.2 }}
           className="relative w-full max-w-2xl max-h-[90vh] flex flex-col bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl overflow-hidden text-slate-100"
         >
-          {/* Header */}
+          {/* Cabeçalho do Modal */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800 bg-gradient-to-r from-indigo-950/50 via-purple-950/40 to-slate-900">
             <div className="flex items-center gap-2.5">
               <div className="p-2 rounded-xl bg-gradient-to-tr from-amber-500 to-indigo-500 text-white shadow-lg shadow-indigo-500/20">
@@ -131,7 +131,7 @@ export const MagicCaptionModal: React.FC<MagicCaptionModalProps> = ({
             </button>
           </div>
 
-          {/* Vibe Selector Bar */}
+          {/* Barra de seleção de estilo e vibe de humor */}
           <div className="p-4 border-b border-slate-800 bg-slate-900/60 space-y-3">
             <div className="flex items-center justify-between text-xs text-slate-400">
               <span className="font-semibold uppercase tracking-wider text-slate-300">
@@ -163,7 +163,7 @@ export const MagicCaptionModal: React.FC<MagicCaptionModalProps> = ({
               })}
             </div>
 
-            {/* Custom topic prompt input */}
+            {/* Campo para sugestão de assunto ou contexto personalizado */}
             <div className="flex gap-2">
               <input
                 type="text"
@@ -188,7 +188,7 @@ export const MagicCaptionModal: React.FC<MagicCaptionModalProps> = ({
             </div>
           </div>
 
-          {/* Body Content / Cards */}
+          {/* Área com os cartões de legendas sugeridas */}
           <div className="flex-1 overflow-y-auto p-4 space-y-3">
             {errorMsg && (
               <div className="p-3.5 rounded-xl bg-red-950/50 border border-red-800/60 text-red-200 text-xs flex items-center justify-between">
@@ -236,7 +236,7 @@ export const MagicCaptionModal: React.FC<MagicCaptionModalProps> = ({
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="space-y-2 flex-1">
-                        {/* Tag */}
+                        {/* Categoria / Tag */}
                         <div className="flex items-center gap-2">
                           <span className="px-2 py-0.5 text-[10px] font-bold rounded-md bg-indigo-500/20 text-indigo-300 uppercase tracking-wider border border-indigo-500/30">
                             {cap.tag}
@@ -246,7 +246,7 @@ export const MagicCaptionModal: React.FC<MagicCaptionModalProps> = ({
                           </span>
                         </div>
 
-                        {/* Top & Bottom Text Display */}
+                        {/* Exibição dos textos Superior e Inferior */}
                         <div className="space-y-1">
                           {cap.topText && (
                             <div className="flex items-baseline gap-2">
@@ -271,7 +271,7 @@ export const MagicCaptionModal: React.FC<MagicCaptionModalProps> = ({
                         </div>
                       </div>
 
-                      {/* Apply button */}
+                      {/* Botão para aplicar a legenda selecionada */}
                       <button
                         id={`apply-caption-btn-${index}`}
                         onClick={() => {
@@ -306,7 +306,7 @@ export const MagicCaptionModal: React.FC<MagicCaptionModalProps> = ({
             )}
           </div>
 
-          {/* Footer */}
+          {/* Rodapé do Modal */}
           <div className="flex items-center justify-between px-5 py-3 border-t border-slate-800 bg-slate-900/90 text-xs text-slate-400">
             <span className="flex items-center gap-1">
               <Sparkles className="w-3.5 h-3.5 text-indigo-400" />

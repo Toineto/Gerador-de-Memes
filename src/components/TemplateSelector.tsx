@@ -33,7 +33,7 @@ export const TemplateSelector: React.FC<TemplateSelectorProps> = ({
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // AI Generator states
+  // Estados do gerador de imagens por IA
   const [aiPrompt, setAiPrompt] = useState('');
   const [aiAspectRatio, setAiAspectRatio] = useState<'1:1' | '4:3' | '16:9'>('1:1');
   const [isAiGenerating, setIsAiGenerating] = useState(false);
@@ -128,7 +128,7 @@ export const TemplateSelector: React.FC<TemplateSelectorProps> = ({
 
   return (
     <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
-      {/* Top Tabs */}
+      {/* Abas superiores de navegação */}
       <div className="flex items-center justify-between border-b border-slate-800 pb-3">
         <div className="flex items-center gap-1.5 p-1 bg-slate-950/80 rounded-xl border border-slate-800/80">
           <button
@@ -167,10 +167,10 @@ export const TemplateSelector: React.FC<TemplateSelectorProps> = ({
         </div>
       </div>
 
-      {/* Tab 1: Template Gallery */}
+      {/* Aba 1: Galeria de Modelos Famosos */}
       {activeTab === 'templates' && (
         <div className="space-y-3">
-          {/* Search and Category Filters */}
+          {/* Barra de busca e filtros de categoria */}
           <div className="flex flex-col sm:flex-row gap-2">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
@@ -200,7 +200,7 @@ export const TemplateSelector: React.FC<TemplateSelectorProps> = ({
             </div>
           </div>
 
-          {/* Grid of Templates */}
+          {/* Grade de templates */}
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2.5 max-h-[260px] overflow-y-auto pr-1 scrollbar-thin">
             {filteredTemplates.map((template) => {
               const isSelected = currentTemplateId === template.id;
@@ -239,7 +239,7 @@ export const TemplateSelector: React.FC<TemplateSelectorProps> = ({
         </div>
       )}
 
-      {/* Tab 2: Upload Your Own Image */}
+      {/* Aba 2: Upload de Foto Própria */}
       {activeTab === 'upload' && (
         <div
           onDragOver={(e) => e.preventDefault()}
@@ -266,7 +266,7 @@ export const TemplateSelector: React.FC<TemplateSelectorProps> = ({
         </div>
       )}
 
-      {/* Tab 3: Generate Meme Image with Gemini */}
+      {/* Aba 3: Geração de Imagem com Gemini */}
       {activeTab === 'ai_generate' && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
@@ -302,7 +302,7 @@ export const TemplateSelector: React.FC<TemplateSelectorProps> = ({
             />
           </div>
 
-          {/* Quick inspiration chips */}
+          {/* Sugestões rápidas de prompt */}
           <div className="flex flex-wrap gap-1.5">
             <span className="text-[10px] text-slate-400 self-center">Sugestões:</span>
             {AI_SAMPLE_PROMPTS.map((prompt, idx) => (

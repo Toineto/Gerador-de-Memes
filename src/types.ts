@@ -20,9 +20,9 @@ export interface MemeTemplate {
 export interface TextLayer {
   id: string;
   text: string;
-  x: number; // 0 to 1 relative position
-  y: number; // 0 to 1 relative position
-  fontSize: number; // in px at base 600px width
+  x: number; // Posição horizontal relativa (0 a 1)
+  y: number; // Posição vertical relativa (0 a 1)
+  fontSize: number; // Tamanho da fonte em pixels para largura base de 600px
   color: string;
   strokeColor: string;
   strokeWidth: number;

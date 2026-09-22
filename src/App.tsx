@@ -13,11 +13,11 @@ import { motion, AnimatePresence } from 'motion/react';
 export default function App() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  // Template and Image state
+  // Estados do modelo e imagem selecionada
   const [currentTemplate, setCurrentTemplate] = useState<MemeTemplate>(POPULAR_TEMPLATES[0]);
   const [imageUrl, setImageUrl] = useState<string>(POPULAR_TEMPLATES[0].url);
 
-  // Text & Formatting states
+  // Estados de texto, estilo e formatação do meme
   const [topText, setTopText] = useState<string>(POPULAR_TEMPLATES[0].defaultTopText || 'Ler a documentação de 50 páginas');
   const [bottomText, setBottomText] = useState<string>(POPULAR_TEMPLATES[0].defaultBottomText || 'Descobrir tudo na base da tentativa e erro');
   const [memeStyle, setMemeStyle] = useState<MemeStyle>('classic');
@@ -33,11 +33,11 @@ export default function App() {
   const [watermark, setWatermark] = useState<string>('');
   const [extraLayers, setExtraLayers] = useState<TextLayer[]>([]);
 
-  // Modals
+  // Modais interativos
   const [isMagicCaptionOpen, setIsMagicCaptionOpen] = useState(false);
   const [isImageAnalysisOpen, setIsImageAnalysisOpen] = useState(false);
 
-  // Toast / Status notification
+  // Notificações e feedback visual
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [copySuccess, setCopySuccess] = useState(false);
 
@@ -49,7 +49,7 @@ export default function App() {
   };
 
   /**
-   * Extract high-res base64 image representation for AI analysis
+   * Extrai a representação em base64 da imagem em alta resolução para enviar à IA
    */
   const getImageBase64 = useCallback((): string | null => {
     const canvas = canvasRef.current;
@@ -57,13 +57,13 @@ export default function App() {
     try {
       return canvas.toDataURL('image/jpeg', 0.9);
     } catch (err) {
-      console.warn('Canvas toDataURL falhou, usando imageUrl bruta:', err);
+      console.warn('Canvas toDataURL falhou, usando imageUrl direta:', err);
       return imageUrl.startsWith('data:') ? imageUrl : null;
     }
   }, [imageUrl]);
 
   /**
-   * Handle selecting a template
+   * Seleciona um modelo de meme predefinido
    */
   const handleSelectTemplate = (template: MemeTemplate) => {
     setCurrentTemplate(template);
@@ -74,7 +74,7 @@ export default function App() {
   };
 
   /**
-   * Handle uploading a custom image
+   * Carrega uma imagem própria enviada pelo usuário
    */
   const handleUploadImage = (dataUrl: string, name?: string) => {
     setImageUrl(dataUrl);
@@ -90,7 +90,7 @@ export default function App() {
   };
 
   /**
-   * Handle AI generated image from text prompt
+   * Recebe uma nova imagem gerada por prompt no Gemini
    */
   const handleAiGeneratedImage = (dataUrl: string) => {
     setImageUrl(dataUrl);
@@ -106,7 +106,7 @@ export default function App() {
   };
 
   /**
-   * Apply a Magic Caption selection
+   * Aplica a legenda selecionada no modal de IA diretamente no meme
    */
   const handleApplyCaption = (newTopText: string, newBottomText: string) => {
     setTopText(newTopText);
@@ -115,7 +115,7 @@ export default function App() {
   };
 
   /**
-   * Download the meme as PNG
+   * Faz o download do meme renderizado no canvas em formato PNG
    */
   const handleDownload = () => {
     const canvas = canvasRef.current;
@@ -137,7 +137,7 @@ export default function App() {
   };
 
   /**
-   * Copy image to clipboard
+   * Copia a imagem renderizada para a área de transferência do sistema
    */
   const handleCopyImage = async () => {
     const canvas = canvasRef.current;
@@ -164,7 +164,7 @@ export default function App() {
   };
 
   /**
-   * Share via Web Share API
+   * Compartilha a imagem através da Web Share API
    */
   const handleShare = async () => {
     const canvas = canvasRef.current;
@@ -197,7 +197,7 @@ export default function App() {
   };
 
   /**
-   * Reset canvas
+   * Limpa os textos e restaura configurações básicas do canvas
    */
   const handleReset = () => {
     setTopText('');
@@ -210,16 +210,16 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-indigo-500 selection:text-white">
-      {/* Navigation Header */}
+      {/* Barra superior de navegação */}
       <Header
         onOpenMagicCaption={() => setIsMagicCaptionOpen(true)}
         onOpenImageAnalysis={() => setIsImageAnalysisOpen(true)}
         onDownload={handleDownload}
       />
 
-      {/* Main Studio Area */}
+      {/* Área principal do estúdio */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
-        {/* Magic Caption Prominent Notification Banner */}
+        {/* Banner de destaque para o recurso principal de Legenda Mágica */}
         <div className="bg-gradient-to-r from-indigo-950/70 via-purple-950/50 to-slate-900 border border-indigo-500/30 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-lg shadow-indigo-950/50">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-xl bg-gradient-to-tr from-amber-500 to-indigo-600 text-white shadow-md shadow-amber-500/20">
@@ -246,9 +246,9 @@ export default function App() {
           </button>
         </div>
 
-        {/* 2-Column Responsive Layout: Left Canvas | Right Controls */}
+        {/* Layout responsivo em 2 colunas: Canvas à esquerda | Controles à direita */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* Left Column: Canvas Preview */}
+          {/* Coluna da esquerda: Pré-visualização do Canvas */}
           <div className="lg:col-span-7 flex flex-col items-center">
             <MemeCanvas
               canvasRef={canvasRef}
@@ -269,7 +269,7 @@ export default function App() {
               watermark={watermark}
             />
 
-            {/* Quick action bar below canvas */}
+            {/* Barra de atalhos rápidos logo abaixo do canvas */}
             <div className="flex items-center justify-between w-full mt-3 px-2 text-xs text-slate-400">
               <div className="flex items-center gap-2">
                 <span className="font-medium text-slate-300">{currentTemplate.name}</span>
@@ -295,7 +295,7 @@ export default function App() {
             </div>
           </div>
 
-          {/* Right Column: Editor Controls */}
+          {/* Coluna da direita: Painel de Controles do Editor */}
           <div className="lg:col-span-5 space-y-4">
             <EditorControls
               topText={topText}
@@ -335,7 +335,7 @@ export default function App() {
           </div>
         </div>
 
-        {/* Bottom Section: Template Selector, Upload & AI Image Generation */}
+        {/* Seção inferior: Galeria de Modelos, Envio de Foto e Geração com IA */}
         <div className="pt-4">
           <div className="mb-2">
             <h3 className="text-sm font-bold text-slate-200">
@@ -354,7 +354,7 @@ export default function App() {
         </div>
       </main>
 
-      {/* Magic Caption Modal */}
+      {/* Modal da Legenda Mágica */}
       <MagicCaptionModal
         isOpen={isMagicCaptionOpen}
         onClose={() => setIsMagicCaptionOpen(false)}
@@ -362,14 +362,14 @@ export default function App() {
         getImageBase64={getImageBase64}
       />
 
-      {/* Image Analysis Modal */}
+      {/* Modal de Análise de Imagem e Humor */}
       <ImageAnalysisModal
         isOpen={isImageAnalysisOpen}
         onClose={() => setIsImageAnalysisOpen(false)}
         getImageBase64={getImageBase64}
       />
 
-      {/* Toast Notification */}
+      {/* Notificação flutuante de sucesso / toast */}
       <AnimatePresence>
         {toastMessage && (
           <motion.div

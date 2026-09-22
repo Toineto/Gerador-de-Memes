@@ -15,7 +15,7 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="w-full border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-        {/* Left: Brand / Title */}
+        {/* Lado esquerdo: Marca e Título da Aplicação */}
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 via-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/25">
             <Laugh className="w-6 h-6" />
@@ -35,7 +35,7 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* Right: Quick actions */}
+        {/* Lado direito: Botões de ação rápida */}
         <div className="flex items-center gap-2">
           <button
             onClick={onOpenMagicCaption}

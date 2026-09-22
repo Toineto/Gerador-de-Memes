@@ -66,7 +66,7 @@ export const ImageAnalysisModal: React.FC<ImageAnalysisModalProps> = ({
     }
   };
 
-  // Trigger on first open if empty
+  // Dispara a análise na primeira abertura se ainda não houver dados
   React.useEffect(() => {
     if (isOpen && !analysis && !isLoading) {
       handleAnalyze();
@@ -85,7 +85,7 @@ export const ImageAnalysisModal: React.FC<ImageAnalysisModalProps> = ({
           transition={{ duration: 0.2 }}
           className="relative w-full max-w-2xl max-h-[90vh] flex flex-col bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl overflow-hidden text-slate-100"
         >
-          {/* Header */}
+          {/* Cabeçalho do Modal */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800 bg-gradient-to-r from-emerald-950/40 via-indigo-950/30 to-slate-900">
             <div className="flex items-center gap-2.5">
               <div className="p-2 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shadow-md">
@@ -112,7 +112,7 @@ export const ImageAnalysisModal: React.FC<ImageAnalysisModalProps> = ({
             </button>
           </div>
 
-          {/* Modal Body */}
+          {/* Corpo do Modal */}
           <div className="flex-1 overflow-y-auto p-5 space-y-4">
             {errorMsg && (
               <div className="p-3.5 rounded-xl bg-red-950/50 border border-red-800/60 text-red-200 text-xs flex items-center justify-between">
@@ -145,7 +145,7 @@ export const ImageAnalysisModal: React.FC<ImageAnalysisModalProps> = ({
               </div>
             ) : analysis ? (
               <div className="space-y-4 text-xs">
-                {/* Virality Card & Summary */}
+                {/* Cartão de Resumo e Potencial de Viralização */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div className="sm:col-span-2 p-4 rounded-xl bg-slate-800/60 border border-slate-700/60 space-y-1.5">
                     <div className="flex items-center gap-1.5 text-slate-300 font-semibold text-xs">
@@ -157,7 +157,7 @@ export const ImageAnalysisModal: React.FC<ImageAnalysisModalProps> = ({
                     </p>
                   </div>
 
-                  {/* Virality Score Gauge */}
+                  {/* Medidor do Potencial Viral */}
                   <div className="p-4 rounded-xl bg-gradient-to-br from-indigo-950/60 to-purple-950/60 border border-indigo-500/30 flex flex-col items-center justify-center text-center space-y-1">
                     <span className="text-[11px] font-semibold text-indigo-300 flex items-center gap-1">
                       <TrendingUp className="w-3.5 h-3.5 text-indigo-400" />
@@ -176,7 +176,7 @@ export const ImageAnalysisModal: React.FC<ImageAnalysisModalProps> = ({
                   </div>
                 </div>
 
-                {/* Facial Expression & Emotion */}
+                {/* Análise de Expressão Facial e Postura */}
                 <div className="p-4 rounded-xl bg-slate-800/40 border border-slate-700/60 space-y-1.5">
                   <div className="flex items-center gap-1.5 text-slate-200 font-semibold">
                     <ScanEye className="w-3.5 h-3.5 text-indigo-400" />
@@ -187,7 +187,7 @@ export const ImageAnalysisModal: React.FC<ImageAnalysisModalProps> = ({
                   </p>
                 </div>
 
-                {/* Humor Breakdown */}
+                {/* Dinâmica cômica da imagem */}
                 <div className="p-4 rounded-xl bg-slate-800/40 border border-slate-700/60 space-y-1.5">
                   <div className="flex items-center gap-1.5 text-slate-200 font-semibold">
                     <Flame className="w-3.5 h-3.5 text-amber-400" />
@@ -198,9 +198,9 @@ export const ImageAnalysisModal: React.FC<ImageAnalysisModalProps> = ({
                   </p>
                 </div>
 
-                {/* Target Communities & Alternative Angles */}
+                {/* Comunidades recomendadas e ideias alternativas */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {/* Communities */}
+                  {/* Comunidades */}
                   <div className="p-4 rounded-xl bg-slate-800/40 border border-slate-700/60 space-y-2">
                     <div className="flex items-center gap-1.5 text-slate-200 font-semibold">
                       <Share2 className="w-3.5 h-3.5 text-emerald-400" />
@@ -218,7 +218,7 @@ export const ImageAnalysisModal: React.FC<ImageAnalysisModalProps> = ({
                     </div>
                   </div>
 
-                  {/* Alternative Angles */}
+                  {/* Ideias e ângulos alternativos */}
                   <div className="p-4 rounded-xl bg-slate-800/40 border border-slate-700/60 space-y-2">
                     <div className="flex items-center gap-1.5 text-slate-200 font-semibold">
                       <Lightbulb className="w-3.5 h-3.5 text-amber-400" />
@@ -238,7 +238,7 @@ export const ImageAnalysisModal: React.FC<ImageAnalysisModalProps> = ({
             ) : null}
           </div>
 
-          {/* Footer */}
+          {/* Rodapé com botão de reanálise */}
           <div className="flex items-center justify-between px-5 py-3 border-t border-slate-800 bg-slate-900/90 text-xs">
             <button
               onClick={handleAnalyze}

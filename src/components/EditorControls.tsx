@@ -111,6 +111,7 @@ export const EditorControls: React.FC<EditorControlsProps> = ({
 }) => {
   const [showAdvanced, setShowAdvanced] = useState(false);
 
+  // Inverte os textos do topo e da base
   const swapTexts = () => {
     const temp = topText;
     setTopText(bottomText);
@@ -119,9 +120,9 @@ export const EditorControls: React.FC<EditorControlsProps> = ({
 
   return (
     <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-5 text-slate-200">
-      {/* Primary Action Buttons */}
+      {/* Botões Principais de Ação com IA */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {/* MAGIC CAPTION BUTTON - The Main Star */}
+        {/* BOTÃO DA LEGENDA MÁGICA - Destaque principal */}
         <button
           id="magic-caption-main-btn"
           onClick={onOpenMagicCaption}
@@ -135,7 +136,7 @@ export const EditorControls: React.FC<EditorControlsProps> = ({
           </span>
         </button>
 
-        {/* IMAGE ANALYSIS / MEME INTEL */}
+        {/* ANÁLISE DE IMAGEM / INTELIGÊNCIA DO MEME */}
         <button
           id="analyze-image-btn"
           onClick={onOpenImageAnalysis}
@@ -146,7 +147,7 @@ export const EditorControls: React.FC<EditorControlsProps> = ({
         </button>
       </div>
 
-      {/* Meme Style Selector */}
+      {/* Seletor do Estilo Visual do Meme */}
       <div className="flex items-center justify-between p-1 bg-slate-950/70 border border-slate-800 rounded-xl">
         <button
           onClick={() => setMemeStyle('classic')}
@@ -170,9 +171,9 @@ export const EditorControls: React.FC<EditorControlsProps> = ({
         </button>
       </div>
 
-      {/* Top & Bottom Text Fields */}
+      {/* Campos de Entrada de Texto Superior e Inferior */}
       <div className="space-y-3">
-        {/* Top text */}
+        {/* Texto superior */}
         <div className="space-y-1">
           <div className="flex items-center justify-between text-xs text-slate-400">
             <label htmlFor="top-text-input" className="font-semibold uppercase text-[11px] text-slate-300">
@@ -199,7 +200,7 @@ export const EditorControls: React.FC<EditorControlsProps> = ({
           </div>
         </div>
 
-        {/* Swap Button */}
+        {/* Botão de Inversão de Texto */}
         <div className="flex justify-center -my-1.5">
           <button
             onClick={swapTexts}
@@ -210,7 +211,7 @@ export const EditorControls: React.FC<EditorControlsProps> = ({
           </button>
         </div>
 
-        {/* Bottom text */}
+        {/* Texto inferior */}
         <div className="space-y-1">
           <div className="flex items-center justify-between text-xs text-slate-400">
             <label htmlFor="bottom-text-input" className="font-semibold uppercase text-[11px] text-slate-300">
@@ -238,10 +239,10 @@ export const EditorControls: React.FC<EditorControlsProps> = ({
         </div>
       </div>
 
-      {/* Typography & Style Quick Toggles */}
+      {/* Controles Rápidos de Tipografia e Estilização */}
       <div className="space-y-3 pt-1 border-t border-slate-800/80">
         <div className="grid grid-cols-2 gap-3">
-          {/* Font selection */}
+          {/* Escolha da fonte */}
           <div className="space-y-1">
             <label className="text-[11px] font-semibold text-slate-400">Fonte</label>
             <select
@@ -257,7 +258,7 @@ export const EditorControls: React.FC<EditorControlsProps> = ({
             </select>
           </div>
 
-          {/* Text Size */}
+          {/* Controle deslizante de tamanho da fonte */}
           <div className="space-y-1">
             <div className="flex justify-between text-[11px] font-semibold text-slate-400">
               <span>Tamanho do Texto</span>
@@ -275,7 +276,7 @@ export const EditorControls: React.FC<EditorControlsProps> = ({
           </div>
         </div>
 
-        {/* Alignment and Formatting Toggles */}
+        {/* Alinhamento de texto e maiúsculas */}
         <div className="flex items-center justify-between pt-1">
           <div className="flex items-center gap-1 p-1 bg-slate-950/70 border border-slate-800 rounded-xl">
             <button
@@ -329,10 +330,10 @@ export const EditorControls: React.FC<EditorControlsProps> = ({
           </div>
         </div>
 
-        {/* Advanced Styling Drawer */}
+        {/* Gaveta de Opções Avançadas de Customização */}
         {showAdvanced && (
           <div className="p-3.5 bg-slate-950/80 border border-slate-800/90 rounded-xl space-y-3.5 text-xs">
-            {/* Color Pickers */}
+            {/* Seletores de cor de preenchimento e contorno */}
             <div className="grid grid-cols-2 gap-3">
               <div className="flex items-center justify-between">
                 <span className="text-slate-400 font-medium">Cor do Texto</span>
@@ -361,7 +362,7 @@ export const EditorControls: React.FC<EditorControlsProps> = ({
               </div>
             </div>
 
-            {/* Stroke Width Slider */}
+            {/* Espessura do contorno do texto */}
             <div className="space-y-1">
               <div className="flex justify-between text-slate-400">
                 <span>Espessura da Borda</span>
@@ -378,7 +379,7 @@ export const EditorControls: React.FC<EditorControlsProps> = ({
               />
             </div>
 
-            {/* Image Filters */}
+            {/* Filtros visuais na imagem */}
             <div className="space-y-1">
               <span className="text-slate-400 font-medium block">Filtro da Imagem</span>
               <div className="flex flex-wrap gap-1.5">
@@ -398,7 +399,7 @@ export const EditorControls: React.FC<EditorControlsProps> = ({
               </div>
             </div>
 
-            {/* Watermark Tag */}
+            {/* Marca d'água opcional */}
             <div className="space-y-1">
               <label className="text-slate-400 font-medium block">Marca d'água personalizada (opcional)</label>
               <input
@@ -413,7 +414,7 @@ export const EditorControls: React.FC<EditorControlsProps> = ({
         )}
       </div>
 
-      {/* Export & Action Controls */}
+      {/* Botões de Exportação, Cópia e Compartilhamento */}
       <div className="space-y-2 pt-2 border-t border-slate-800">
         <button
           id="download-meme-btn"
