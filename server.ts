@@ -21,6 +21,53 @@ function getGeminiClient(): GoogleGenAI {
   });
 }
 
+// Lista ordenada de modelos para análise e texto, priorizando modelos com cotas gratuitas robustas e alta disponibilidade
+const TEXT_MULTIMODAL_MODELS = [
+  'gemini-3.8-flash',
+  'gemini-3.1-flash-lite',
+  'gemini-flash-latest',
+  'gemini-3.1-pro-preview',
+];
+
+// Função auxiliar com tentativas automáticas e recuo exponencial (backoff) para contornar instabilidades 503 ou 429
+async function callGeminiWithFallback<T>(
+  fn: (model: string) => Promise<T>,
+  models = TEXT_MULTIMODAL_MODELS,
+): Promise<T> {
+  let lastError: any = null;
+
+  for (const model of models) {
+    // Tenta até 2 vezes por modelo com pequeno intervalo se der 503 temporário
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      try {
+        return await fn(model);
+      } catch (err: any) {
+        lastError = err;
+        const status = err?.status || err?.code || '';
+        const msg = err?.message || String(err);
+        console.warn(`[Gemini] Modelo ${model} falhou (tentativa ${attempt}):`, msg);
+
+        // Se for erro de cota excedida (429), não insiste no mesmo modelo, parte para o próximo
+        if (msg.includes('429') || msg.includes('Quota exceeded') || status === 'RESOURCE_EXHAUSTED') {
+          break;
+        }
+
+        // Se for 503 (serviço indisponível temporário), aguarda brevemente antes de retentar
+        if (msg.includes('503') || status === 'UNAVAILABLE') {
+          if (attempt < 2) {
+            await new Promise((res) => setTimeout(res, 800));
+          }
+        } else {
+          // Outros erros estruturais, passa para o próximo modelo da lista
+          break;
+        }
+      }
+    }
+  }
+
+  throw lastError || new Error('Todos os modelos Gemini disponíveis falharam.');
+}
+
 async function startServer() {
   const app = express();
 
@@ -88,64 +135,53 @@ Cada legenda DEVE conter:
 Retorne exatamente 5 opções em formato JSON estruturado.
 `;
 
-      let responseText = '';
-      const modelsToTry = ['gemini-3.1-pro-preview', 'gemini-3.8-flash'];
-
-      for (const model of modelsToTry) {
-        try {
-          const response = await ai.models.generateContent({
-            model,
-            contents: {
-              parts: [
-                {
-                  inlineData: {
-                    mimeType: mimeType || 'image/jpeg',
-                    data: base64Data,
-                  },
-                },
-                { text: prompt },
-              ],
-            },
-            config: {
-              responseMimeType: 'application/json',
-              responseSchema: {
-                type: Type.ARRAY,
-                description: 'Array de 5 opções de legendas engraçadas de meme',
-                items: {
-                  type: Type.OBJECT,
-                  properties: {
-                    topText: {
-                      type: Type.STRING,
-                      description: 'Texto superior de introdução do meme',
-                    },
-                    bottomText: {
-                      type: Type.STRING,
-                      description: 'Texto inferior com o desfecho cômico do meme',
-                    },
-                    tag: {
-                      type: Type.STRING,
-                      description: 'Etiqueta curta de 1 a 2 palavras com a categoria do humor',
-                    },
-                    explanation: {
-                      type: Type.STRING,
-                      description: 'Breve explicação de por que a piada combina com a expressão da imagem',
-                    },
-                  },
-                  required: ['topText', 'bottomText', 'tag', 'explanation'],
+      const response = await callGeminiWithFallback(async (model) => {
+        return await ai.models.generateContent({
+          model,
+          contents: {
+            parts: [
+              {
+                inlineData: {
+                  mimeType: mimeType || 'image/jpeg',
+                  data: base64Data,
                 },
               },
+              { text: prompt },
+            ],
+          },
+          config: {
+            responseMimeType: 'application/json',
+            responseSchema: {
+              type: Type.ARRAY,
+              description: 'Array de 5 opções de legendas engraçadas de meme',
+              items: {
+                type: Type.OBJECT,
+                properties: {
+                  topText: {
+                    type: Type.STRING,
+                    description: 'Texto superior de introdução do meme',
+                  },
+                  bottomText: {
+                    type: Type.STRING,
+                    description: 'Texto inferior com o desfecho cômico do meme',
+                  },
+                  tag: {
+                    type: Type.STRING,
+                    description: 'Etiqueta curta de 1 a 2 palavras com a categoria do humor',
+                  },
+                  explanation: {
+                    type: Type.STRING,
+                    description: 'Breve explicação de por que a piada combina com a expressão da imagem',
+                  },
+                },
+                required: ['topText', 'bottomText', 'tag', 'explanation'],
+              },
             },
-          });
+          },
+        });
+      });
 
-          if (response.text) {
-            responseText = response.text.trim();
-            break;
-          }
-        } catch (err) {
-          console.warn(`Modelo ${model} falhou na legenda mágica, tentando o próximo:`, err);
-        }
-      }
-
+      const responseText = response.text ? response.text.trim() : '';
       if (!responseText) {
         throw new Error('Falha ao gerar legendas com os modelos Gemini.');
       }
@@ -194,63 +230,52 @@ Forneça uma análise perspicaz, divertida e completa EM PORTUGUÊS DO BRASIL (p
 6. alternativeAngles: Uma lista de 3 ideias ou situações criativas diferentes para transformar esta foto em um meme viral (em português).
 `;
 
-      let responseText = '';
-      const modelsToTry = ['gemini-3.1-pro-preview', 'gemini-3.8-flash'];
-
-      for (const model of modelsToTry) {
-        try {
-          const response = await ai.models.generateContent({
-            model,
-            contents: {
-              parts: [
-                {
-                  inlineData: {
-                    mimeType: mimeType || 'image/jpeg',
-                    data: base64Data,
-                  },
+      const response = await callGeminiWithFallback(async (model) => {
+        return await ai.models.generateContent({
+          model,
+          contents: {
+            parts: [
+              {
+                inlineData: {
+                  mimeType: mimeType || 'image/jpeg',
+                  data: base64Data,
                 },
-                { text: prompt },
+              },
+              { text: prompt },
+            ],
+          },
+          config: {
+            responseMimeType: 'application/json',
+            responseSchema: {
+              type: Type.OBJECT,
+              properties: {
+                visualSummary: { type: Type.STRING },
+                charactersAndMood: { type: Type.STRING },
+                humorBreakdown: { type: Type.STRING },
+                viralityScore: { type: Type.INTEGER },
+                targetCommunities: {
+                  type: Type.ARRAY,
+                  items: { type: Type.STRING },
+                },
+                alternativeAngles: {
+                  type: Type.ARRAY,
+                  items: { type: Type.STRING },
+                },
+              },
+              required: [
+                'visualSummary',
+                'charactersAndMood',
+                'humorBreakdown',
+                'viralityScore',
+                'targetCommunities',
+                'alternativeAngles',
               ],
             },
-            config: {
-              responseMimeType: 'application/json',
-              responseSchema: {
-                type: Type.OBJECT,
-                properties: {
-                  visualSummary: { type: Type.STRING },
-                  charactersAndMood: { type: Type.STRING },
-                  humorBreakdown: { type: Type.STRING },
-                  viralityScore: { type: Type.INTEGER },
-                  targetCommunities: {
-                    type: Type.ARRAY,
-                    items: { type: Type.STRING },
-                  },
-                  alternativeAngles: {
-                    type: Type.ARRAY,
-                    items: { type: Type.STRING },
-                  },
-                },
-                required: [
-                  'visualSummary',
-                  'charactersAndMood',
-                  'humorBreakdown',
-                  'viralityScore',
-                  'targetCommunities',
-                  'alternativeAngles',
-                ],
-              },
-            },
-          });
+          },
+        });
+      });
 
-          if (response.text) {
-            responseText = response.text.trim();
-            break;
-          }
-        } catch (err) {
-          console.warn(`Modelo ${model} falhou na análise da imagem, tentando o próximo:`, err);
-        }
-      }
-
+      const responseText = response.text ? response.text.trim() : '';
       if (!responseText) {
         throw new Error('Falha ao analisar a imagem com os modelos Gemini.');
       }
@@ -282,7 +307,7 @@ Forneça uma análise perspicaz, divertida e completa EM PORTUGUÊS DO BRASIL (p
       const memePrompt = `Meme photo template: ${prompt}. Cinematic lighting, expressive facial expressions, high detail, clean composition suitable for meme text overlay. No text or watermarks in the image.`;
 
       let generatedImageUrl: string | null = null;
-      const imageModels = ['gemini-3.1-flash-image', 'gemini-3.1-flash-lite-image'];
+      const imageModels = ['gemini-3.1-flash-lite-image', 'gemini-3.1-flash-image'];
 
       for (const model of imageModels) {
         try {
@@ -316,7 +341,7 @@ Forneça uma análise perspicaz, divertida e completa EM PORTUGUÊS DO BRASIL (p
             break;
           }
         } catch (err) {
-          console.warn(`Modelo de geração de imagem ${model} falhou:`, err);
+          console.warn(`[Gemini Image] Modelo ${model} falhou:`, err);
         }
       }
 
